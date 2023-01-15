@@ -1,31 +1,31 @@
 <script setup>
-import { computed, reactive } from '@vue/runtime-core';
+import { computed, reactive, onMounted } from '@vue/runtime-core';
 import BudgetList from './components/BudgetList.vue';
 import TotalBalance from './components/TotalBalance.vue';
 import Form from './components/Form.vue';
 
+import { collection, onSnapshot } from 'firebase/firestore';
+
+import { db } from './firebase';
 
 const state = reactive({
-  list: [
-    {
-      id: 1,
-      type: 'INCOME',
-      value: 100,
-      comment: 'Some comment 1',
-    },
-    {
-      id: 2,
-      type: 'INCOME',
-      value: 200,
-      comment: 'Some comment 2',
-    },
-    {
-      id: 3,
-      type: 'OUTCOME',
-      value: 300,
-      comment: 'Some comment 3',
-    },
-  ],
+  list: [],
+});
+
+onMounted(() => {
+  onSnapshot(collection(db, 'budget-list'), (querySnapshot) => {
+    const tmpList = [];
+    querySnapshot.forEach((doc) => {
+      const todo = {
+        id: doc.data().id,
+        type: doc.data().type,
+        value: doc.data().value,
+        comment: doc.data().comment,
+      };
+      tmpList.push(todo);
+    });
+    state.list = tmpList;
+  });
 });
 
 const totalBalance = computed(() => {
