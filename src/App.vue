@@ -4,7 +4,7 @@ import BudgetList from './components/BudgetList.vue';
 import TotalBalance from './components/TotalBalance.vue';
 import Form from './components/Form.vue';
 
-import { collection, onSnapshot } from 'firebase/firestore';
+import { addDoc, collection, onSnapshot } from 'firebase/firestore';
 
 import { db } from './firebase';
 
@@ -44,10 +44,10 @@ function setIdItem(data) {
   data.id = state.list[state.list.length - 1].id + 1;
 }
 
-function onFormSubmit(data) {
+async function onFormSubmit(data) {
   setIdItem(data);
   checkTypeItem(data);
-  state.list.push(data);
+  await addDoc(collection(db, "budget-list"), data);
 }
 </script>
 
